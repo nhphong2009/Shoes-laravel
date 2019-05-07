@@ -1,5 +1,8 @@
 @extends('layouts.index')
 @section('content')
+	<div class="alert alert-danger print-error-msg" style="display:none">
+        <ul></ul>
+    </div>
     <div class="content">
     	<div class="section group">
 				<div class="cont-desc span_1_of_2">
@@ -76,7 +79,7 @@
 				</ul>
 				<div class="resp-tabs-container">
 					<div class="product-desc">
-						{{ $getProduct->content }}
+						{!! $getProduct->content !!}
 					</div>
 
 				<div class="review">
@@ -155,3 +158,7 @@
  	</div>
     </div>
  @endsection
+@section('link')
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" type="text/javascript" charset="utf-8" async defer></script>
+@endsection

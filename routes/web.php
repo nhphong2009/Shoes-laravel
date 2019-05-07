@@ -10,6 +10,8 @@ Route::post('/users/logout', 'Auth\LoginController@userLogout')->name('user.logo
 
 Route::post('/addcart', 'IndexController@addcart')->name('index.addcart');
 
+Route::get('/removecart/{rowId}', 'IndexController@removeCart')->name('index.removeCart');
+
 Route::get('/checkout', 'IndexController@cart')->name('index.cart');
 
 Route::post('/checkout','IndexController@checkout')->name('index.checkout');
@@ -26,9 +28,9 @@ Route::get('/category/{slug}', 'IndexController@getCate')->name('index.getCate')
 
 Route::get('/product', 'IndexController@getPro')->name('index.getPro');
 
-Route::get('/removecart/{rowId}', 'IndexController@removeCart')->name('index.removeCart');
-
 Route::get('/changQuantity/{rowId}', 'IndexController@changQuantity')->name('index.changQuantity');
+
+Route::post('/search', 'IndexController@searchPro')->name('index.searchPro');
 
 Route::group(['prefix'=>'admin'],function(){
 	Route::get('/', 'AdminController@index')->name('admin.dashboard');
@@ -183,12 +185,13 @@ Route::group(['prefix'=>'admin'],function(){
 		Route::get('/', 'OrderController@index')->name('orders.index');
 		
 		Route::get('/create', 'OrderController@create')->name('orders.create');
-		Route::get('/check/{id}', 'OrderController@checkApplyOrder')->name('orders.checkApplyOrder');
-		Route::get('/check/{id}', 'OrderController@checkCancelOrder')->name('orders.checkCancelOrder');
+
 		Route::post('/','OrderController@store')->name('orders.store');
 		Route::get('/{id}','OrderController@show')->name('orders.show');
 		Route::get('/{id}/edit', 'OrderController@edit')->name('orders.edit');
 		Route::post('/{id}', 'OrderController@update')->name('orders.update');
+		Route::post('/check/{id}', 'OrderController@checkApplyOrder')->name('orders.checkApplyOrder');
+		Route::delete('/check/{id}', 'OrderController@checkCancelOrder')->name('orders.checkCancelOrder');
 		Route::delete('/{id}', 'OrderController@destroy')->name('orders.destroy');
 	});
 });

@@ -57,6 +57,14 @@ class IndexController extends Controller
         return view('view_detail', compact('getProductalls', 'products', 'categories', 'getProductdetails', 'getProductimages', 'brands', 'getProduct', 'colors', 'sizes', 'materials', 'getRandoms'));
     }
 
+    public function searchPro(Request $request)
+    {
+        $categories = Category::all();
+        $products = Product::where('name', 'LIKE', '%'.$request->search.'%')->orWhere('slug', 'LIKE', '%'.$request->search.'%')->orWhere('description', 'LIKE', '%'.$request->search.'%')->get();
+
+        return view('view_searchproduct', compact('products', 'categories'));
+    }
+
     public function getBrand($slug)
     {
         $brands = Brand::where('slug', $slug)->select('id')->get();
@@ -97,13 +105,17 @@ class IndexController extends Controller
         {
             $id = $rowId;
             $remove = Cart::remove($rowId);
-            return response()->json(['update' => 1, 'rowId' => $id]);
+            $cart_subtotal = Cart::subtotal();
+            $cart_count = Cart::count();
+            return response()->json(['update' => 1, 'rowId' => $id, 'cart_subtotal' => $cart_subtotal, 'cart_count' => $cart_count]);
         } 
         else
         {
             $new_qty = $product->qty + $status;
             $update = Cart::update($rowId, ['qty' => $new_qty]);
-            return response()->json(['update' => $update]);
+            $cart_subtotal = Cart::subtotal();
+            $cart_count = Cart::count();
+            return response()->json(['update' => $update, 'cart_subtotal' => $cart_subtotal, 'cart_count' => $cart_count]);
         }
     }
 

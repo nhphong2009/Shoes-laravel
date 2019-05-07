@@ -1,5 +1,8 @@
 @extends('layouts.index')
 @section('content')
+	<div class="alert alert-danger print-error-msg" style="display:none">
+        <ul></ul>
+    </div>
 	<div class="show_complete_checkout"></div>
 	<table width="75%;"	 style="margin: 100px auto;" class="show_all_checkout">
 		<thead>
@@ -38,10 +41,10 @@
 						{{ $data->options->color }}
 					</td>
 					<td class="checkout_show">
-						 <span id="subtotal-{{$data->rowId}}">{{ $data->options->subtotal }}</span>
+						 <span id="subtotal-{{$data->rowId}}">{{ number_format($data->qty * $data->price) }}</span> VNĐ
 					</td>
 					<td class="checkout_show">
-						<a href="/removecart/{{ $data->rowId }}" title="">Xóa</a>
+						<a class="remove_cart_rowId" href="#" data-url="/removecart/{{ $data->rowId }}" title="">Xóa</a>
 					</td>
 				</tr>
 			@endforeach
@@ -49,7 +52,9 @@
 		<tbody>
 			<tr>
 				<td colspan="7" class="checkout_show" style="text-align: right;">Total: </td>
-				<td> {{ Cart::subtotal(0) }} VNĐ</td>
+				<td>
+					<span class="cart_subtotal">{{ Cart::subtotal(0) }}</span> VNĐ
+				</td>
 			</tr>
 		</tbody>
 	</table>
@@ -61,5 +66,7 @@
 	</form>
 @endsection
 @section('link')
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" type="text/javascript" charset="utf-8" async defer></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 @endsection

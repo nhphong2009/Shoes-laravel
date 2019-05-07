@@ -15,7 +15,7 @@ $(function() {
             { data: 'customer_name', name: 'customer_name' },
             { data: 'customer_mobile', name: 'customer_mobile' },
             { data: 'customer_address', name: 'customer_address' },
-            { data: 'status', name: 'status' },
+            { data: 'status', name: 'status'},
             { data: 'action', name: 'action' }
         ]
     });
@@ -272,50 +272,24 @@ $(document).ready(function () {
 		}
 	});
 
-	//check order
-	$(document).on('click', '.btn-check-order', function(e) {
-		var url = $(this).attr('data-url');
-		$('#modal-check-order').modal('show');
+	//nút apply order
+	$(document).on('click', '.btn-check-order', function() {
+		var url=$(this).attr('data-url');
 		$.ajax({
-			type: 'get',
+			type: 'post',
 			url: url,
 			success: function (response) {
-				var order_id = response.order.id;
-				var order_code = response.order.code;
-				var customer_name = response.order.customer_name;
-				var customer_mobile = response.order.customer_mobile;
-				var customer_address = response.order.customer_address;
-			    var orderdetails = response.order.orderdetails;
-				var a = '';
-			    for (var i = 0; i < orderdetails.length; i++){
-				    var product_name = response.order.orderdetails[i].product.name;
-				    var orderdetail_id = response.order.orderdetails[i].id;
-				    var quantity = response.order.orderdetails[i].quantity;
-				    var color_description = response.order.orderdetails[i].color.description;
-				    var size_name = response.order.orderdetails[i].size.name;
-				    a += i + `
-							<tr id=`+orderdetail_id+`>
-		                        <td>`+order_code+`</td>
-		                        <td>`+customer_name+`</td>
-		                        <td>`+customer_mobile+`</td>
-		                        <td>`+customer_address+`</td>
-		                        <td>`+product_name+`</td>
-		                        <td>`+size_name+`</td>
-		                        <td>`+color_description+`</td>
-		                        <td>`+quantity+`</td>
-		                        <td>
-		                            <button type="button" class="btn btn-info btn-apply-checkorder" data-url="/admin/check/`+orderdetail_id+`" > Apply order</button>
-		                            <button type="button" class="btn btn-danger btn-cancel-checkorder" data-url="/admin/check/`+orderdetail_id+`"> Cancel order</button>
-		                        </td>
-		                    </tr>
-						`;
-				}
-				$('#checkorder').html(a);
+				console.log(response)
+				toastr.success('Order has applied!');
+
+				$('#modal-check-order').modal('hide');			
+
+				$('#orders-table').DataTable().ajax.reload();	
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
-
+				toastr.error('Order had applied "Đơn hàng đã xác nhận"!');
 			}
-		});
+		})
 	});
 
 	//bắt sự kiện click vào nút edit

@@ -38,7 +38,7 @@ class OrderController extends Controller
                 <button type='button' class='btn btn-primary btn-check-order' data-url='/admin/order/check/". $orders->id ."'> Check order</button>
                 <button type='button' class='btn btn-info btn-show' data-url='/admin/order/".$orders->id."'> Details</button>
                 <button type='button' class='btn btn-warning btn-edit-order' data-url='/admin/order/".$orders->id."'> Edit</button>
-                <button type='button' class='btn btn-danger btn-delete-order' data-url='/admin/order/".$orders->id."'> Delete</button>
+                <button type='button' id='delete_".$orders->id."' class='btn btn-danger btn-delete-order' data-url='/admin/order/".$orders->id."'> Delete</button>
                 ";
             })
             ->toJson();
@@ -46,15 +46,12 @@ class OrderController extends Controller
 
     public function checkApplyOrder($id)
     {
-        $order = Order::find($id);
-        $orderdetails = $order->orderdetails;
-        foreach($orderdetails as $orderdetail)
+        $orders = Order::where('id', $id)->where('status', 'Đang chờ')->get();
+
+        foreach($orders as $order)
         {
-            $product_name = $orderdetail->product->name;
-            $size_name = $orderdetail->size->name;
-            $color_description = $orderdetail->color->description;
-            $orderdetail_quantity = $orderdetail->quantity;
-            $orderdetail_id = $orderdetail->id;
+            $order->status = "Đơn hàng đã xác nhận";
+            $order->save();
         }
 
         return response()->json(['order' => $order]);
@@ -62,18 +59,9 @@ class OrderController extends Controller
 
     public function checkCancelOrder($id)
     {
-        $order = Order::find($id);
-        $orderdetails = $order->orderdetails;
-        foreach($orderdetails as $orderdetail)
-        {
-            $product_name = $orderdetail->product->name;
-            $size_name = $orderdetail->size->name;
-            $color_description = $orderdetail->color->description;
-            $orderdetail_quantity = $orderdetail->quantity;
-            $orderdetail_id = $orderdetail->id;
-        }
+        Order::find($id)->delete();
 
-        return response()->json(['order' => $order]);
+        return response()->json(['id' => $id]);
     }
 
     /**

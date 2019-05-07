@@ -84,7 +84,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Status (*)</label>
-                        <input type="text" name="status" class="form-control" id="status_add" placeholder="status">
+                        <input type="text" name="status" class="form-control" value="Đang chờ" id="status_add" placeholder="status" readonly>
                     </div>
 				
 					
@@ -129,7 +129,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Status (*)</label>
-                        <input type="text" name="status" class="form-control" id="status_edit" placeholder="status">
+                        <input type="text" name="status" class="form-control" id="status_edit" placeholder="status" readonly>
                     </div>
                 
                     
@@ -198,48 +198,6 @@
     </div>
 </div>
 
-{{-- Modal chốt, hủy order --}}
-<div class="modal fade" id="modal-check-order">
-    <div class="modal-dialog" style="width: 70%">
-        <div class="modal-content">
-
-            <form action="#" id="form-check-order" role="form" method="POST">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Check order</h4>
-            </div>
-            <div class="modal-body">
-                
-                        <h2 style="text-align: center">Check order:</h2>
-                        <table class="table table-hover">
-                            <thead>
-                                <tr class="checkorder-row">
-                                    <th>Code</th>
-                                    <th>Customer_name</th>
-                                    <th>Customer_mobile</th>
-                                    <th>Customer_address</th>
-                                    <th>Product</th>
-                                    <th>Size</th>
-                                    <th>Color</th>
-                                    <th>Quantity</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="checkorder">
-                                <!-- Order detail -->                        
-                            </tbody>
-                        </table>
-                
-                    
-                
-            </div>
-            <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                
-            </div>
-            </form>
-        </div>
-    </div>
 {{-- Modal sửa order detail --}}
 <div class="modal fade" id="modal-edit-orderdetail">
     <div class="modal-dialog">

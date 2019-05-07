@@ -67,74 +67,49 @@
                 <a href="{{ route('index') }}"><img src="{{ asset('shoes_home/images/logo.png') }}" alt="" /></a>
             </div>
               <div class="cart">
-                   <p>Welcome to our Online Store! <span>Cart:</span><div id="dd" class="wrapper-dropdown-2"> <span id="cart_count">{{ Cart::count() }}</span> item(s) - <span id="cart_subtotal">{{ Cart::subtotal(0) }}</span> VNĐ
+                   <p>Welcome to our Online Store! <span>Cart:</span><div id="dd" class="wrapper-dropdown-2"> <span id="cart_count">{{ Cart::count() }}</span> item(s) - <span id="cart_subtotal" class="cart_price_subtotal">{{ Cart::subtotal(0) }}</span> VNĐ
                     <ul class="dropdown">
-                        @if(Cart::count() <= 0)
-                            <li>you have no items in your Shopping cart</li>
-                        @else
-                            <table id="show_add_cart">
-                                <tr>
-                                    <td class="show_cart">Ảnh sản phẩm</td>
-                                    <td class="show_cart">Tên sản phẩm</td>
-                                    <td class="show_cart">Giá</td>
-                                    <td class="show_cart">Số lượng</td>
-                                    <td class="show_cart">Tổng tiền</td>
-                                    <td class="show_cart">Tùy chọn</td>
-                                </tr>
-                                    <tbody class="show_items">
-                                        @foreach(Cart::content() as $data)
-                                        <tr id="{{ $data->rowId }}">
-                                            <td id="show_img_cart">
-                                                <img src="/storage/images/{{ $data->options->image }}">
-                                            </td>
-                                            <td>{{ $data->name }}</td>
-                                            <td>{{ number_format($data->price) }} VNĐ</td>
-                                            <td>{{ $data->qty }}</td>
-                                            <td>{{ $data->subtotal(0) }} VNĐ</td>
+                        <table id="show_add_cart">
+                            <tr>
+                                <td class="show_cart">Ảnh sản phẩm</td>
+                                <td class="show_cart">Tên sản phẩm</td>
+                                <td class="show_cart">Giá</td>
+                                <td class="show_cart">Số lượng</td>
+                                <td class="show_cart">Tổng tiền</td>
+                                <td class="show_cart">Tùy chọn</td>
+                            </tr>
+                                <tbody class="show_items">
+                                    <tr id="show_nonecart">
+                                        <td colspan="6"> Bạn chưa add cart nào</td>
+                                    </tr>
+                                    @foreach(Cart::content() as $cart)
+                                        <tr id="{{ $cart->rowId }}">
                                             <td>
-                                                <button class="remove_rowId" data-url="/removecart/{{$data->rowId }}" type="button">Xóa</button>
+                                                <img src="/storage/images/{{ $cart->options->image }}">
+                                            </td>
+                                            <td>{{ $cart->name }}</td>
+                                            <td>{{ number_format($cart->price) }} VNĐ</td>
+                                            <td>
+                                                <span id="cart_qty_{{ $cart->rowId }}">{{ $cart->qty }}</span>
+                                            </td>
+                                            <td>
+                                                <span id="cart_qty_subtotal_{{ $cart->rowId }}">{{ number_format($cart->subtotal) }}</span> VNĐ
+                                            </td>
+                                            <td>
+                                                <button class="remove_rowId" data-url="/removecart/{{ $cart->rowId }}" type="button"> Xóa </button>
                                             </td>
                                         </tr>
-                                        @endforeach
-                                        <tr>
-                                            <td colspan="4"></td>
-                                            <td colspan="2" align="center">
-                                                <a href="/checkout" title="">Check out</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                    @endforeach
+                                </tbody>
+                                <tr id="button_checkout">
+                                    <td colspan="4"></td>
+                                    <td colspan="2" align="center">
+                                        <a href="/checkout" title="">Check out</a>
+                                    </td>
+                                </tr>
                             </table>
-                        @endif
                     </ul></div></p>
               </div>
-              <script type="text/javascript">
-            function DropDown(el) {
-                this.dd = el;
-                this.initEvents();
-            }
-            DropDown.prototype = {
-                initEvents : function() {
-                    var obj = this;
-
-                    obj.dd.on('click', function(event){
-                        $(this).toggleClass('active');
-                        event.stopPropagation();
-                    }); 
-                }
-            }
-
-            $(function() {
-
-                var dd = new DropDown( $('#dd') );
-
-                $(document).click(function() {
-                    // all dropdowns
-                    $('.wrapper-dropdown-2').removeClass('active');
-                });
-
-            });
-
-        </script>
      <div class="clear"></div>
   </div>
     <div class="header_bottom">
@@ -157,8 +132,9 @@
                 </ul>
             </div>
             <div class="search_box">
-                <form>
-                    <input type="text" value="Search" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Search';}"><input type="submit" value="">
+                <form method="POST" action="/search">
+                    @csrf
+                    <input type="text" value="Search" name="search" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Search';}"><input type="submit" value="">
                 </form>
             </div>
             <div class="clear"></div>
