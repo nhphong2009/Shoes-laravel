@@ -41,8 +41,10 @@ $(document).ready(function () {
 					var new_cart_subtotal = numeral(response.cart_subtotal).format('0,0');
 					$('.cart_subtotal').text(new_cart_subtotal);
 					$('#checkout-'+ response.rowId).remove();
-					$('#cart_count').text(response.cart_count);
+					$('.cart_count').text(response.cart_count);
 					$('.cart_price_subtotal').text(new_cart_subtotal);
+					$('.checkout_order').hide();
+					$('.show_complete_checkout').append('<h3 style="margin: 100px auto"> YOU NEED TO BUY PRODUCT (<a href="/product"> VIEW ALL PRODUCT </a>) </h3>');
 				}
 				else
 				{
@@ -54,7 +56,7 @@ $(document).ready(function () {
 					$('.cart_subtotal').text(new_cart_subtotal);
 					$('#cart_qty_'+ response.update.rowId).text(response.update.qty)
 					$('#cart_qty_subtotal_'+ response.update.rowId).text(new_subtotal)
-					$('#cart_count').text(response.cart_count);
+					$('.cart_count').text(response.cart_count);
 			    	$('.cart_price_subtotal').text(new_cart_subtotal);
 				}
 			},
@@ -81,11 +83,12 @@ $(document).ready(function () {
 		});
 	})
 
-	if($('#cart_count').text() <= 0)
+	if($('.cart_count').text() <= 0)
 	{
 		$("#button_checkout").hide()
 		$("#show_nonecart").show()
 		$('.show_all_checkout').hide()
+		$('.checkout_order').hide();
 		$('.show_complete_checkout').append('<h3 style="margin: 100px auto"> YOU NEED TO BUY PRODUCT (<a href="/product"> VIEW ALL PRODUCT </a>) </h3>');
 	}
 	else
@@ -93,6 +96,7 @@ $(document).ready(function () {
 		$("#button_checkout").show()
 		$("#show_nonecart").hide()
 		$('.show_all_checkout').show()
+		$('.checkout_order').show();
 		$('.show_complete_checkout').hide()
 	}
 
@@ -114,24 +118,54 @@ $(document).ready(function () {
 				else
 				{
 					toastr.success('Add product success!');
-					$('.show_items').append(`
-					<tr id="`+ response.add_cart.rowId +`">
-						<td><img src="../storage/images/`+ response.add_cart.options.image +`"></td>
-						<td>`+ response.add_cart.name +`</td>
-						<td>`+ response.add_cart.price +` VNĐ</td>
-						<td><span id="cart_qty_`+ response.add_cart.rowId +`">`+ response.add_cart.qty +`</span></td>
-						<td><span id="cart_qty_subtotal_`+ response.add_cart.rowId +`">`+ response.add_cart.options.subtotal +`</span> VNĐ</td>
-						<td>
-							<button class="remove_rowId" data-url="/removecart/`+ response.add_cart.rowId +`" type="button"> Xóa </button>
-						</td>
-					</tr>
-					`);
+
+					
+					var rowId = $('#rowId_'+ response.add_cart.rowId).val();
+					var price = numeral(response.add_cart.price).format('0,0');
+					var update_cart_subtotal = numeral(response.add_cart.price * response.add_cart.qty).format('0,0');
+
+					if(rowId == response.add_cart.rowId)
+					{
+						$('.update_cart#'+ rowId).replaceWith(`
+						<tr class="update_cart" id="`+ rowId +`">
+							<td>
+								<img src="../storage/images/`+ response.add_cart.options.image +`">
+								<input type="hidden" name="rowId" id="rowId_`+ rowId +`" value="`+ rowId +`">
+							</td>
+							<td>`+ response.add_cart.name +`</td>
+							<td>`+ price +` VNĐ</td>
+							<td><span id="cart_qty_`+ rowId +`">`+ response.add_cart.qty +`</span></td>
+							<td><span id="cart_qty_subtotal_`+ rowId +`">`+ update_cart_subtotal +`</span> VNĐ</td>
+							<td>
+								<button class="remove_rowId" data-url="/removecart/`+ rowId +`" type="button"> Xóa </button>
+							</td>
+						</tr>
+						`);
+					}
+					else
+					{
+						$('.show_items').append(`
+						<tr class="update_cart" id="`+ response.add_cart.rowId +`">
+							<td>
+								<img src="../storage/images/`+ response.add_cart.options.image +`">
+								<input type="hidden" name="rowId" id="rowId_`+ response.add_cart.rowId +`" value="`+ response.add_cart.rowId +`">
+							</td>
+							<td>`+ response.add_cart.name +`</td>
+							<td>`+ price +` VNĐ</td>
+							<td><span id="cart_qty_`+ response.add_cart.rowId +`">`+ response.add_cart.qty +`</span></td>
+							<td><span id="cart_qty_subtotal_`+ response.add_cart.rowId +`">`+ update_cart_subtotal +`</span> VNĐ</td>
+							<td>
+								<button class="remove_rowId" data-url="/removecart/`+ response.add_cart.rowId +`" type="button"> Xóa </button>
+							</td>
+						</tr>
+						`);
+					}
 					$("#button_checkout").show()
 					$("#show_nonecart").hide()
 				}
 					
-				$('#cart_count').text(response.count);
-				$('#cart_subtotal').text(response.subtotal);
+				$('.cart_count').text(response.count);
+				$('.cart_price_subtotal').text(response.subtotal);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 
@@ -148,9 +182,10 @@ $(document).ready(function () {
 			url: url,
 			success: function (response) {
 				$('tr#checkout-'+ response.rowId).remove();
-				if(response.count <= 0)
+				if(response.rowId <= 0)
 				{
-					$('.show_all_checkout').hide()
+					$('.show_all_checkout').hide();
+					$('.checkout_order').hide();
 					$('.show_complete_checkout').append('<h3 style="margin: 100px auto"> YOU NEED TO BUY PRODUCT (<a href="/product"> VIEW ALL PRODUCT </a>) </h3>');
 				}
 				else
@@ -158,9 +193,18 @@ $(document).ready(function () {
 					toastr.success('Remove product success!');
 					$('.show_all_checkout').show()
 					$('.show_complete_checkout').hide()
-					$('#cart_count').text(response.count);
-			    	$('#cart_subtotal').text(response.subtotal);
-			    	$('tr#'+ response.rowId).remove();
+					$('.cart_count').text(response.count);
+			    	$('.cart_price_subtotal').text(response.subtotal);
+			    	$('tr.update_cart#'+ response.rowId).remove();
+			    	if(response.count <= 0)
+					{
+						$("#button_checkout").hide()
+						$("#show_nonecart").show()
+						$('.show_all_checkout').hide()
+						$('.checkout_order').hide();
+						$('.show_complete_checkout').show()
+						$('.show_complete_checkout').append('<h3 style="margin: 100px auto"> YOU NEED TO BUY PRODUCT (<a href="/product"> VIEW ALL PRODUCT </a>) </h3>');
+					}
 				}
 			},
 			error: function (error) {
@@ -176,6 +220,7 @@ $(document).ready(function () {
 			type: 'get',
 			url: url,
 			success: function (response) {
+				toastr.success('Remove product success!');
 				$('tr#'+ response.rowId).remove();
 				if(response.count <= 0)
 				{
@@ -184,8 +229,8 @@ $(document).ready(function () {
 				}
 				else
 				{
-					$('#cart_count').text(response.count);
-			    	$('#cart_subtotal').text(response.subtotal);
+					$('.cart_count').text(response.count);
+			    	$('.cart_price_subtotal').text(response.subtotal);
 				}
 			},
 			error: function (error) {

@@ -172,40 +172,66 @@ class IndexController extends Controller
 
     public function addcart(Request $request)
     {
-        $productdetails = Productdetail::where('product_id', $request->id)->select('id')->get();
+        $productdetail = Productdetail::where('product_id', $request->id)
+                        ->where('size_id', $request->size)
+                        ->where('color_id', $request->color)
+                        ->first();
         $price_total = 0;
-        $sub_quantity = 0;
-        foreach($productdetails as $productdetail)
+        // dd($productdetails);
+        if($productdetail->quantity >= $request->quantity)
         {
-            $getProductdetails = Productdetail::where('id', $productdetail->id)->where('quantity','>=',$request->quantity)->get();
-            foreach($getProductdetails as $getProductdetail)
+            $product_quantity =  $productdetail->quantity;
+            $product_name = $productdetail->product->name;
+            $product_price = $productdetail->product->price;
+            $getProductImage = $productdetail->product->thumbnail;
+            if($request->color == $productdetail->color_id)
             {
-                $quantity =  $getProductdetail->quantity;
-                $product_name = $getProductdetail->product->name;
-                $product_price = $getProductdetail->product->price;
-                $getProductImage = $getProductdetail->product->thumbnail;
-                if($request->color == $getProductdetail->color_id)
-                {
-                    $color_description = $getProductdetail->color->description;
-                }
-                if($request->size == $getProductdetail->size_id)
-                {
-                    $size_name = $getProductdetail->size->name;
-                }
+                $color_description = $productdetail->color->description;
+            }
+            if($request->size == $productdetail->size_id)
+            {
+                $size_name = $productdetail->size->name;
+            }
+
+            $add_cart = Cart::add(['id' => $request->id, 'name' => $product_name, 'qty' => $request->quantity, 'price' => $product_price, 'options' => ['size' => $size_name, 'color' => $color_description, 'image' => $getProductImage]]);
+            $data = Cart::content();
+            $subtotal = Cart::subtotal(0);
+            $total = Cart::total(0);
+            $count = Cart::count();
+
+            if($add_cart)
+            {
+                return response()->json(['data' => $data, 'add_cart' => $add_cart, 'subtotal' => $subtotal, 'total' => $total, 'count' => $count]);
             }
         }
+            
+        // $productdetails = Productdetail::where('product_id', $request->id)->select('id')->get();
+        // $price_total = 0;
+        // foreach($productdetails as $productdetail)
+        // {
+        //     $getProductdetails = Productdetail::where('id', $productdetail->id)->where('size_id', $request->size)->get();
+        //     foreach($getProductdetails as $getProductdetail)
+        //     {
+        //         if($getProductdetail->quantity >= $request->quantity)
+        //         {
+        //             $quantity =  $getProductdetail->quantity;
+        //             $product_name = $getProductdetail->product->name;
+        //             $product_price = $getProductdetail->product->price;
+        //             $getProductImage = $getProductdetail->product->thumbnail;
+        //             if($request->color == $getProductdetail->color_id)
+        //             {
+        //                 $color_description = $getProductdetail->color->description;
+        //             }
+        //             if($request->size == $getProductdetail->size_id)
+        //             {
+        //                 $size_name = $getProductdetail->size->name;
+        //             }
+        //         }
+                    
+        //     }
+        // }
         
-        $price_total += $request->quantity * $product_price;
-
-        $add_cart = Cart::add(['id' => $request->id, 'name' => $product_name, 'qty' => $request->quantity, 'price' => $product_price, 'options' => ['size' => $size_name, 'color' => $color_description, 'image' => $getProductImage, 'subtotal' => number_format($price_total)]]);
-        $data = Cart::content();
-        $subtotal = Cart::subtotal(0);
-        $total = Cart::total(0);
-        $count = Cart::count();
-        if($add_cart)
-        {
-            return response()->json(['data' => $data, 'add_cart' => $add_cart, 'count' => Cart::count(), 'subtotal' => $subtotal, 'total' => $total, 'count' => $count]);
-        }
+            
     }
 
     public function getSizeByColor(Request $request)

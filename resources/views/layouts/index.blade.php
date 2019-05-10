@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="{{ asset('shoes_home/css/global.css') }}">
 <script type="text/javascript" src="{{ asset('shoes_home/js/cart.js') }}"></script>
 <script src="{{ asset('shoes_home/js/slides.min.jquery.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 @yield('link')
 <script>
     $(function(){
@@ -31,6 +32,9 @@
   </script>
 </head>
 <body>
+    <div class="alert alert-danger print-error-msg" style="display:none">
+        <ul></ul>
+    </div>
   <div class="wrap">
    <div class="header">
         <div class="headertop_desc">
@@ -67,7 +71,7 @@
                 <a href="{{ route('index') }}"><img src="{{ asset('shoes_home/images/logo.png') }}" alt="" /></a>
             </div>
               <div class="cart">
-                   <p>Welcome to our Online Store! <span>Cart:</span><div id="dd" class="wrapper-dropdown-2"> <span id="cart_count">{{ Cart::count() }}</span> item(s) - <span id="cart_subtotal" class="cart_price_subtotal">{{ Cart::subtotal(0) }}</span> VNĐ
+                   <p>Welcome to our Online Store! <span>Cart:</span><div id="dd" class="wrapper-dropdown-2"> <span class="cart_count">{{ Cart::count() }}</span> item(s) - <span class="cart_price_subtotal">{{ Cart::subtotal(0) }}</span> VNĐ
                     <ul class="dropdown">
                         <table id="show_add_cart">
                             <tr>
@@ -83,9 +87,10 @@
                                         <td colspan="6"> Bạn chưa add cart nào</td>
                                     </tr>
                                     @foreach(Cart::content() as $cart)
-                                        <tr id="{{ $cart->rowId }}">
+                                        <tr class="update_cart" id="{{ $cart->rowId }}">
                                             <td>
                                                 <img src="/storage/images/{{ $cart->options->image }}">
+                                                <input type="hidden" name="rowId" id="rowId_{{$cart->rowId}}" value="{{$cart->rowId}}">
                                             </td>
                                             <td>{{ $cart->name }}</td>
                                             <td>{{ number_format($cart->price) }} VNĐ</td>
@@ -117,7 +122,7 @@
                 <ul>
                     @foreach($categories as $cate)
                         @if($cate->parent_id == 0)
-                            @if($cate->id == 1)
+                            @if($cate->name == "HOME")
                                 <li class="active">
                                     <a href="/category/{{ $cate->slug }}"> {{ $cate->name }} </a>
                                 </li>
